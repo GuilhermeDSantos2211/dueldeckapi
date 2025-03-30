@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/**").permitAll() // Endpoints públicos para autenticação
+                        .requestMatchers("/api/users/signUp", "/api/users/login").permitAll() // Endpoints públicos para autenticação
                         .anyRequest().authenticated()
                 );
 
