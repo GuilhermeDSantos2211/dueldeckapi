@@ -43,7 +43,7 @@ public class UserService {
 
     public String userLogin(UserLoginRequestDTO dto) {
         UserEntity user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Email não cadastrado: " + dto.getEmail()));
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new RuntimeException("Senha incorreta!");
