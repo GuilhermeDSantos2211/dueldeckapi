@@ -6,7 +6,6 @@ import com.dueldeckapi.dto.User.UserSignUpRequestDTO;
 import com.dueldeckapi.mapper.UserMapper;
 import com.dueldeckapi.model.UserEntity;
 import com.dueldeckapi.repository.UserRepository;
-import com.dueldeckapi.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,14 +14,13 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+
     private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtTokenProvider = jwtTokenProvider;
         this.userMapper = userMapper;
     }
 
@@ -41,14 +39,14 @@ public class UserService {
         return userMapper.mapUserDTO(savedUser);
     }
 
-    public String userLogin(UserLoginRequestDTO dto) {
+    public UserResponseDTO userLogin(UserLoginRequestDTO dto) {
         UserEntity user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Email não encontrado"));
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new RuntimeException("Senha incorreta!");
         }
 
-        return jwtTokenProvider.generateToken(user.getEmail());
+        return userMapper.mapUserDTO(user);
     }
 }
